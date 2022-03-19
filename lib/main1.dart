@@ -7,61 +7,44 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
-
-  // ignore: avoid_init_to_null
-  Timer? timer = null;
-  late int? savedNumber = 0;
-
+  Timer? timer;
+  late int savedNumber = 0;
   final StreamController<int> _showedNumStreamController = StreamController();
   Stream<int> get showedNum => _showedNumStreamController.stream;
+
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       home: Material(
-        child: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: TextField(
-                  onChanged: (value) {
-                    savedNumber = int.tryParse(value) ?? 0;
-                  },
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  countDown(savedNumber!);
-                },
-                child: const Text('Click me'),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.black),
-                ),
-              ),
-              Expanded(
-                child: StreamBuilder<int>(
-                    stream: showedNum,
-                    builder: (_, snapshot) {
-                      return Text(
-                        '${snapshot.data}',
-                        style: const TextStyle(fontSize: 30),
-                      );
-                    }),
-              ),
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              onChanged: (value) => savedNumber = int.tryParse(value) ?? 0,
+            ),
+            ElevatedButton(
+              child: const Text('Start'),
+              onPressed: () => initCountDown(savedNumber),
+            ),
+            StreamBuilder<int>(
+              stream: showedNum,
+              builder: (_, snapshot) {
+                return Text(
+                  '${snapshot.data ?? 0}',
+                  style: const TextStyle(fontSize: 35),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 
-  countDown(int savedNumber) {
-    if (timer != null) {
-      cancelTimer();
-    }
-
+  initCountDown(int savedNumber) {
+    if (timer != null) cancelTimer();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _showedNumStreamController.add(savedNumber);
       savedNumber--;

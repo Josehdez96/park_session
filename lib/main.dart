@@ -3,42 +3,38 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  late int? userInput;
-  late int? numToShow = 0;
+  int? userInput = 0;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(),
       home: Material(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
               onChanged: (value) {
                 userInput = int.tryParse(value) ?? 0;
               },
             ),
-            IconButton(
+            ElevatedButton(
+              child: const Text('Start'),
               onPressed: () {
-                numToShow = userInput;
                 setState(() {});
               },
-              icon: const Icon(Icons.ac_unit),
             ),
-            _CountDown(numToShow ?? 0)
+            _CountDown(userInput ?? 0)
           ],
         ),
       ),
@@ -48,26 +44,17 @@ class _MyAppState extends State<MyApp> {
 
 // receive number, count - 1 every second and if user puts something else it'll start again
 class _CountDown extends StatefulWidget {
-  final int countDownNum;
-  const _CountDown(this.countDownNum, {Key? key}) : super(key: key);
+  int countDownNum;
+  _CountDown(this.countDownNum, {Key? key}) : super(key: key);
 
   @override
   _CountDownState createState() => _CountDownState();
 }
 
 class _CountDownState extends State<_CountDown> {
-  late int countDownNum;
-
-  @override
-  void initState() {
-    super.initState();
-    countDownNum = widget.countDownNum;
-  }
-
   @override
   void didUpdateWidget(_CountDown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    countDownNum = widget.countDownNum;
     if (widget.countDownNum != oldWidget.countDownNum) {
       substract1();
     }
@@ -75,13 +62,16 @@ class _CountDownState extends State<_CountDown> {
 
   @override
   Widget build(BuildContext context) {
-    return Text('$countDownNum');
+    return Text(
+      '${widget.countDownNum}',
+      style: const TextStyle(fontSize: 35),
+    );
   }
 
   substract1() {
-    if (countDownNum > 0) {
+    if (widget.countDownNum > 0) {
       Timer.periodic(const Duration(seconds: 1), (timer) {
-        countDownNum--;
+        widget.countDownNum--;
         setState(() {});
       });
     }
