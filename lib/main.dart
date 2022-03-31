@@ -44,18 +44,23 @@ class _MyAppState extends State<MyApp> {
 
 // receive number, count - 1 every second and if user puts something else it'll start again
 class _CountDown extends StatefulWidget {
-  int countDownNum;
-  _CountDown(this.countDownNum, {Key? key}) : super(key: key);
+  final int userInput;
+
+  const _CountDown(this.userInput, {Key? key}) : super(key: key);
 
   @override
   _CountDownState createState() => _CountDownState();
 }
 
 class _CountDownState extends State<_CountDown> {
+  late int countDownNum = widget.userInput;
+  Timer? timer;
+
   @override
   void didUpdateWidget(_CountDown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.countDownNum != oldWidget.countDownNum) {
+    if (widget.userInput != oldWidget.userInput) {
+      countDownNum = widget.userInput;
       substract1();
     }
   }
@@ -63,17 +68,22 @@ class _CountDownState extends State<_CountDown> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      '${widget.countDownNum}',
+      '$countDownNum',
       style: const TextStyle(fontSize: 35),
     );
   }
 
   substract1() {
-    if (widget.countDownNum > 0) {
-      Timer.periodic(const Duration(seconds: 1), (timer) {
-        widget.countDownNum--;
+    if (timer != null) cancelTimer();
+    if (countDownNum > 0) {
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        countDownNum--;
         setState(() {});
       });
     }
+  }
+
+  cancelTimer() {
+    timer!.cancel();
   }
 }
